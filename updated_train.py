@@ -115,10 +115,14 @@ def main(args):
     print(f"Corpus length = {len(corpus)}")
 
     ############################################################################
+    print("\n\n---------- SETTING DEVICE ----------")
     # cuda options
     use_cuda = args.cuda and torch.cuda.is_available()
     device = torch.device('cuda' if use_cuda else 'cpu')
-
+    if use_cuda:
+        print("GPU active")
+    else:
+        print("CPU active")
     # seed
     torch.manual_seed(42)
 
@@ -212,4 +216,5 @@ if __name__ == "__main__":
     parser.add_argument('--debug', '-d', action='store_true')
 
     args = vars(parser.parse_args())
+    print(args)
     main(args)
