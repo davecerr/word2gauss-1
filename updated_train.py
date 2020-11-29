@@ -10,7 +10,7 @@ import numpy as np
 # from pyspark.sql import SparkSession
 from scipy.stats import pearsonr, spearmanr
 
-from lib.wikipedia import standardise_title
+# from lib.wikipedia import standardise_title
 
 
 def _open_file(filename):
