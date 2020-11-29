@@ -105,7 +105,7 @@ def main(args):
     # device = torch.device('cuda' if use_cuda else 'cpu')
 
     # seed
-    torch.manual_seed(args.seed)
+    torch.manual_seed(42)
 
     dataset = Corpus.read_corpus(corpus)
     counts = dataset.counts
