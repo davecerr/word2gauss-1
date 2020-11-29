@@ -68,8 +68,8 @@ def train(model, dataset, args, device):
     optimizer = optim.Adam(model.parameters())
     start_time = time()
 
-    for epoch in range(1, args.epoch + 1):
-        train_iter = PairwiseWindowIter(dataset, args.window, args.batch_size)
+    for epoch in range(1, args['epoch'] + 1):
+        train_iter = PairwiseWindowIter(dataset, args['window'], args['batch_size'])
         print('------------------------------')
         print('epoch: {}'.format(epoch))
 
@@ -78,8 +78,8 @@ def train(model, dataset, args, device):
             loss = model(batch)
 
             elapsed = time() - start_time
-            throuput = args.batch_size / elapsed
-            prog = args.batch_size * (i + 1) / len(dataset) * 100
+            throuput = args['batch_size'] / elapsed
+            prog = args['batch_size'] * (i + 1) / len(dataset) * 100
             print('\r  progress: {:.2f}% words/s: {:.2f}'.format(
                       min(prog, 100.), throuput
                   ), end='')
@@ -96,9 +96,9 @@ def train(model, dataset, args, device):
         print()
         print('  loss: {:.4f}'.format(loss.item()))
 
-        if args.debug:
+        if args['debug']:
             torch.save(model.state_dict(),
-                       '{}_epoch{}.pt'.format(args.train.replace('.', '_'),
+                       '{}_epoch{}.pt'.format(args['input_dir'].replace('.', '_'),
                                               epoch)
                        )
 
@@ -108,10 +108,10 @@ def dump_result(model, index_word, args):
     model.to('cpu')
     mu_list, sigma_list = model.state_dict().values()
 
-    with open(args.save, 'w') as f:
+    with open(args['save'], 'w') as f:
         f.write('{} {} {}\n'.format(len(index_word),
-                                    args.size,
-                                    args.covariance))
+                                    args['size'],
+                                    args['covariance']))
 
         for i, (mu, sigma) in enumerate(zip(mu_list, sigma_list)):
             mu_str = ' '.join('{0:.7f}'.format(i) for i in mu.tolist())
@@ -295,6 +295,4 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
     # print(args)
-    # print(args.cuda)
-    # print(args["cuda"])
     main(args)
