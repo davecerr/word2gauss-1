@@ -86,18 +86,19 @@ def main(args):
 
     # read files and create corpus
     # each line in corpus is a list of co-occurring entities
+
     if os.path.exists("corpus.pkl"):
+        print("\n\n---------- loading corpus from existing pickle ----------")
         pickle_in = open("corpus.pkl","rb")
         corpus = pkl.load(pickle_in)
     else:
+        print("\n\n---------- loading corpus from gzip files ----------")
         files = []
         for _, _, fs in os.walk(args["input_dir"]):
             files += [f for f in fs if f.endswith(".gz")]
 
         files = [os.path.join(args["input_dir"], f) for f in files]
-
         corpus = []
-        print("\n\n---------- loading corpus ----------")
         for i, file in tqdm(enumerate(files)):
             sentences = list(_open_file(file))
             corpus += sentences
