@@ -58,6 +58,39 @@ class Corpus(Dataset):
 
 ################################### TRAINING ###################################
 
+class PairwiseWindowIter(object):
+    def __init__(self, dataset, window, batch_size):
+        self.current_position = 0
+        self.dataset = dataset
+        self.window = window
+        self.batch_size = batch_size
+
+        half_w = window % 2 + 1
+        self.order = torch.randperm(len(dataset) - half_w * 2) + half_w
+        self.offset = torch.cat((torch.arange(-half_w, 0),
+                                 torch.arange(1, half_w + 1)))
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current_position == -1:
+            raise StopIteration
+
+        i = self.current_position
+        i_end = i + self.batch_size
+
+        if i_end >= len(self.dataset):
+            i_end = -1
+
+        position = self.order[i:i_end].unsqueeze(1).repeat(1, self.window - 1)
+        target = self.dataset[position]
+        context = self.dataset[position + self.offset]
+
+        self.current_position = i_end
+
+        return target, context
+
 def convert(batch, device):
     target, context = batch
     return target.to(device), context.to(device)
