@@ -14,7 +14,7 @@ from scipy.stats import pearsonr, spearmanr
 
 
 def _open_file(filename):
-    with open(filename) as infile:
+    with gzip.open(filename) as infile:
         for _, line in enumerate(infile):
             yield json.loads(line)
 
@@ -48,7 +48,7 @@ def main(args):
     # read all the files
     files = []
     for _, _, fs in os.walk(args["input_dir"]):
-        files += [f for f in fs]# if f.endswith(".gz")]
+        files += [f for f in fs if f.endswith(".gz")]
 
     files = [os.path.join(args["input_dir"], f) for f in files]
 
