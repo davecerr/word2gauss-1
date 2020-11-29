@@ -66,18 +66,18 @@ def convert(batch, device):
 def train(model, dataset, args, device):
     model.train()
     optimizer = optim.Adam(model.parameters())
-    start_time = time.time()
+    start_time = time()
 
     for epoch in range(1, args.epoch + 1):
         train_iter = PairwiseWindowIter(dataset, args.window, args.batch_size)
         print('------------------------------')
         print('epoch: {}'.format(epoch))
 
-        for i, batch in enumerate(train_iter):
+        for i, batch in tqdm(enumerate(train_iter)):
             batch = convert(batch, device)
             loss = model(batch)
 
-            elapsed = time.time() - start_time
+            elapsed = time() - start_time
             throuput = args.batch_size / elapsed
             prog = args.batch_size * (i + 1) / len(dataset) * 100
             print('\r  progress: {:.2f}% words/s: {:.2f}'.format(
@@ -91,7 +91,7 @@ def train(model, dataset, args, device):
 
             model.embed.regularize_weights()
 
-            start_time = time.time()
+            start_time = time()
 
         print()
         print('  loss: {:.4f}'.format(loss.item()))
@@ -144,6 +144,17 @@ def get_predictions(validation_data, model, is_round=False):
         predicted.append(pred_sim)
 
     return np.array(actual), np.array(predicted)
+
+
+
+
+
+
+
+
+
+
+
 
 
 ##################################### MAIN #####################################
@@ -216,6 +227,9 @@ def main(args):
     ############################################################################
     print("\n\n---------- TRAINING ----------")
     train(model, dataset, args, device)
+
+    ############################################################################
+    print("\n\n---------- SAVING ----------")
     dump_result(model, dataset.index_word, args)
 
 
