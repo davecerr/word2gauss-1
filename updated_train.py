@@ -116,8 +116,8 @@ def main(args):
 
     ############################################################################
     # cuda options
-    # use_cuda = args.cuda and torch.cuda.is_available()
-    # device = torch.device('cuda' if use_cuda else 'cpu')
+    use_cuda = args.cuda and torch.cuda.is_available()
+    device = torch.device('cuda' if use_cuda else 'cpu')
 
     # seed
     torch.manual_seed(42)
@@ -163,12 +163,12 @@ if __name__ == "__main__":
     window = 5
     epoch = 5
     batch_size = 128
-    
+
     parser = argparse.ArgumentParser(description='Gaussian embedding')
 
     parser.add_argument('--input_dir', type=str, required=True, help="input directory to the data")
 
-    parser.add_argument('--save', type=str, required=True,
+    parser.add_argument('--output_dir', type=str, required=True,
                         help='path to save the result model')
 
     parser.add_argument('--cuda', type=int, required=True,
