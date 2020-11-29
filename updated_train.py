@@ -12,6 +12,8 @@ import pickle as pkl
 # from pyspark.sql import SparkSession
 from scipy.stats import pearsonr, spearmanr
 
+from model import GaussianEmbedding
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -84,18 +86,18 @@ class Corpus(Dataset):
 
 def main(args):
 
-    # read files and create corpus
+    ############################################################################
     # each line in corpus is a list of co-occurring entities
-
+    print("\n\n----------- LOADING CORPUS ----------")
     if os.path.exists("corpus.pkl"):
         start = time()
-        print("\n\n---------- loading corpus from existing pickle ----------")
+        print("loading from existing pickle")
         pickle_in = open("corpus.pkl","rb")
         corpus = pkl.load(pickle_in)
         end = time()
         print(f"loaded in {round(end - start,2) secs}")
     else:
-        print("\n\n---------- loading corpus from gzip files ----------")
+        print("loading from gzip files")
         files = []
         for _, _, fs in os.walk(args["input_dir"]):
             files += [f for f in fs if f.endswith(".gz")]
@@ -110,9 +112,9 @@ def main(args):
         pkl.dump(corpus, pickle_out)
         pickle_out.close()
 
-    print(f"Corpus length = {len(corpus)}")
+    print(f"Corpus length = {len(corpus)} \n\n")
 
-
+    ############################################################################
     # cuda options
     # use_cuda = args.cuda and torch.cuda.is_available()
     # device = torch.device('cuda' if use_cuda else 'cpu')
@@ -120,6 +122,8 @@ def main(args):
     # seed
     torch.manual_seed(42)
 
+    ############################################################################
+    print("\n\n---------- CREATING DATASET ----------")
     dataset = Corpus.read_corpus(corpus)
     counts = dataset.counts
 
@@ -127,6 +131,9 @@ def main(args):
     print('words in train file: {}'.format(len(dataset)))
     print()
 
+
+    ############################################################################
+    print("\n\n---------- CREATING MODEL ----------")
     model = nn.Sequential()
     model.add_module('embed', GaussianEmbedding(args.size,
                                                 counts,
@@ -139,6 +146,8 @@ def main(args):
     print(model)
     print()
 
+    ############################################################################
+    print("\n\n---------- TRAINING ----------")
     train(model, dataset, args, device)
     dump_result(model, dataset.index_word, args)
 
