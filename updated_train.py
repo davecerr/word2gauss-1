@@ -217,7 +217,7 @@ if __name__ == "__main__":
     parser.add_argument('--debug', '-d', action='store_true')
 
     args = vars(parser.parse_args())
-    print(args)
+    # print(args)
     # print(args.cuda)
-    print(args["cuda"])
+    # print(args["cuda"])
     main(args)
