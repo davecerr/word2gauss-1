@@ -117,12 +117,15 @@ def main(args):
     ############################################################################
     print("\n\n---------- SETTING DEVICE ----------")
     # cuda options
-    use_cuda = args.cuda and torch.cuda.is_available()
+    use_cuda = args['cuda'] and torch.cuda.is_available()
     device = torch.device('cuda' if use_cuda else 'cpu')
     if use_cuda:
         print("GPU active")
     else:
-        print("CPU active")
+        if args['cuda'] == 0:
+            print("CPU active")
+        else:
+            print("GPU unavailable. Defaulting to CPU")
 
     ############################################################################
     print("\n\n---------- CREATING DATASET ----------")
