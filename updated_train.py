@@ -14,7 +14,7 @@ from scipy.stats import pearsonr, spearmanr
 
 
 def _open_file(filename):
-    with gzip.open(filename) as infile:
+    with open(filename) as infile:
         for _, line in enumerate(infile):
             yield json.loads(line)
 
