@@ -48,12 +48,12 @@ def main(args):
     # read all the files
     files = []
     for _, _, fs in os.walk(args["input_dir"]):
-        print(fs)
         files += [f for f in fs if f.endswith(".gz")]
 
     files = [os.path.join(args["input_dir"], f) for f in files]
 
     corpus = []
+    print("---------- loading corpus of co-occurring entities from .gz files ----------")
     for i, file in tqdm(enumerate(files)):
         sentences = list(_open_file(file))
         corpus += sentences
@@ -70,9 +70,10 @@ def main(args):
         #
         # stop = time()
 
-    print(corpus[:5])
-    print(len(corpus))
 
+    print(f"Corpus length = {len(corpus)}")
+    print(f"\n\n C1 = {corpus[0]}")
+    print(f"\n\n C2 = {corpus[1]}")
     start = time()
     w2v_model = Word2Vec(sentences=corpus,
                          min_count=args["min_count"],
