@@ -95,7 +95,7 @@ def main(args):
         pickle_in = open("corpus.pkl","rb")
         corpus = pkl.load(pickle_in)
         end = time()
-        print(f"loaded in {round(end - start,2) secs}")
+        print(f"loaded in {round(end - start,2)} secs")
     else:
         print("loading from gzip files")
         files = []
