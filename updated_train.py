@@ -98,8 +98,8 @@ def main(args):
     print(f"\n\n C2 = {corpus[1]}")
 
     # cuda options
-    use_cuda = args.cuda and torch.cuda.is_available()
-    device = torch.device('cuda' if use_cuda else 'cpu')
+    # use_cuda = args.cuda and torch.cuda.is_available()
+    # device = torch.device('cuda' if use_cuda else 'cpu')
 
     # seed
     torch.manual_seed(args.seed)
