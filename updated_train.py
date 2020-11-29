@@ -10,6 +10,9 @@ import numpy as np
 # from pyspark.sql import SparkSession
 from scipy.stats import pearsonr, spearmanr
 
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from torch.utils.data import Dataset
 
 def _open_file(filename):
