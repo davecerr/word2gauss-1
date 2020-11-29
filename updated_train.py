@@ -88,9 +88,12 @@ def main(args):
     # each line in corpus is a list of co-occurring entities
 
     if os.path.exists("corpus.pkl"):
+        start = time()
         print("\n\n---------- loading corpus from existing pickle ----------")
         pickle_in = open("corpus.pkl","rb")
         corpus = pkl.load(pickle_in)
+        end = time()
+        print(f"loaded in {round(end - start,2) secs}")
     else:
         print("\n\n---------- loading corpus from gzip files ----------")
         files = []
@@ -105,7 +108,7 @@ def main(args):
 
         pickle_out = open("corpus.pkl","wb")
         pkl.dump(corpus, pickle_out)
-        pkl_out.close()
+        pickle_out.close()
 
     print(f"Corpus length = {len(corpus)}")
 
