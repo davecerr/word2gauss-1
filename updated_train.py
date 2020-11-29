@@ -7,6 +7,7 @@ from collections import Counter, defaultdict
 import ujson as json
 import pandas as pd
 import numpy as np
+import pickle as pkl
 
 # from pyspark.sql import SparkSession
 from scipy.stats import pearsonr, spearmanr
@@ -61,7 +62,7 @@ class Corpus(Dataset):
         counter = Counter()
         dataset = []
 
-        for entity_list in corpus_list:
+        for entity_list in tqdm(corpus_list):
             for entity in entity_list:
                 self.entity_index[entity]
                 counter[self.entity_index[entity]] += 1
@@ -85,21 +86,28 @@ def main(args):
 
     # read files and create corpus
     # each line in corpus is a list of co-occurring entities
-    files = []
-    for _, _, fs in os.walk(args["input_dir"]):
-        files += [f for f in fs if f.endswith(".gz")]
+    if os.path.exists("corpus.pkl"):
+        pickle_in = open("corpus.pkl","rb")
+        corpus = pkl.load(pickle_in)
+    else:
+        files = []
+        for _, _, fs in os.walk(args["input_dir"]):
+            files += [f for f in fs if f.endswith(".gz")]
 
-    files = [os.path.join(args["input_dir"], f) for f in files]
+        files = [os.path.join(args["input_dir"], f) for f in files]
 
-    corpus = []
-    print("\n\n---------- loading corpus ----------")
-    for i, file in tqdm(enumerate(files)):
-        sentences = list(_open_file(file))
-        corpus += sentences
+        corpus = []
+        print("\n\n---------- loading corpus ----------")
+        for i, file in tqdm(enumerate(files)):
+            sentences = list(_open_file(file))
+            corpus += sentences
+
+        pickle_out = open("corpus.pkl","wb")
+        pkl.dump(corpus, pickle_out)
+        pkl_out.close()
 
     print(f"Corpus length = {len(corpus)}")
-    print(f"\n\n C1 = {corpus[0]}")
-    print(f"\n\n C2 = {corpus[1]}")
+
 
     # cuda options
     # use_cuda = args.cuda and torch.cuda.is_available()
