@@ -1,23 +1,22 @@
 import gzip
 import os
-from os.path import join
-from time import time
-from tqdm import tqdm
-from collections import Counter, defaultdict
+import sys
 import ujson as json
 import pandas as pd
 import numpy as np
 import pickle as pkl
 
-# from pyspark.sql import SparkSession
-from scipy.stats import pearsonr, spearmanr
-
-from model import GaussianEmbedding
+from os.path import join
+from time import time
+from tqdm import tqdm
+from collections import Counter, defaultdict
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset
+
+from model import GaussianEmbedding
 
 ################################ DATA HANDLING ################################
 
