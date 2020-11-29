@@ -160,6 +160,17 @@ def get_predictions(validation_data, model, is_round=False):
 ##################################### MAIN #####################################
 
 def main(args):
+
+    ############################################################################
+    print("\n\n---------- ARGUMENTS ----------")
+    print("\nGAUSSIAN:")
+    print(f"Dimension = {args['size']}")
+    print(f"Covariance = {args['covariance']}")
+    print("\nTRAINING:")
+    print(f"Epochs = {args['epoch']}")
+    print(f"Batch Size = {args['batch_size']}")
+    print(f"Window Size = {args['window']}")
+
     ############################################################################
     # each line in corpus is a list of co-occurring entities
     print("\n\n----------- LOADING CORPUS ----------")
@@ -294,5 +305,4 @@ if __name__ == "__main__":
     parser.add_argument('--debug', '-d', action='store_true')
 
     args = vars(parser.parse_args())
-    # print(args)
     main(args)
