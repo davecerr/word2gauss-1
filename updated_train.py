@@ -215,6 +215,6 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
     print(args)
-    print(args.cuda)
+    # print(args.cuda)
     print(args["cuda"])
     main(args)
