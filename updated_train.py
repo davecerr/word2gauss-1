@@ -123,8 +123,6 @@ def main(args):
         print("GPU active")
     else:
         print("CPU active")
-    # seed
-    torch.manual_seed(42)
 
     ############################################################################
     print("\n\n---------- CREATING DATASET ----------")
@@ -211,10 +209,12 @@ if __name__ == "__main__":
                         metavar='N', type=int,
                         help='window size (default: {})'.format(window))
 
-    parser.add_argument('--seed', type=int, default='1234', help='random seed')
+    parser.add_argument('--seed', type=int, default='42', help='random seed')
 
     parser.add_argument('--debug', '-d', action='store_true')
 
     args = vars(parser.parse_args())
     print(args)
+    print(args.cuda)
+    print(args["cuda"])
     main(args)
