@@ -105,7 +105,7 @@ def train(model, dataset, args, device):
         print('------------------------------')
         print('epoch: {}'.format(epoch))
 
-        for i, batch in tqdm(enumerate(train_iter)):
+        for i, batch in enumerate(train_iter):
             batch = convert(batch, device)
             loss = model(batch)
 
@@ -265,7 +265,6 @@ def main(args):
     model.to(device)
     print('Model summary:')
     print(model)
-    print()
 
     ############################################################################
     print("\n\n---------- TRAINING ----------")
