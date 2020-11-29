@@ -10,8 +10,7 @@ import numpy as np
 # from pyspark.sql import SparkSession
 from scipy.stats import pearsonr, spearmanr
 
-# from lib.wikipedia import standardise_title
-
+from torch.utils.data import Dataset
 
 def _open_file(filename):
     with gzip.open(filename) as infile:
@@ -44,8 +43,44 @@ def get_predictions(validation_data, model, is_round=False):
     return np.array(actual), np.array(predicted)
 
 
+
+
+
+
+class Corpus(Dataset):
+    def __init__(self):
+        self.entity_index = defaultdict(lambda: len(self.entity_index))
+
+    @staticmethod
+    def read_corpus(corpus_list):
+        self = Corpus()
+        counter = Counter()
+        dataset = []
+
+        for entity_list in corpus_list:
+            for entity in entity_list:
+                self.entity_index[entity]
+                counter[self.entity_index[entity]] += 1
+                dataset.append(self.entity_index[entity])
+
+        self.index_entity = {v: k for k, v in self.entity_index.items()}
+        self.counts = torch.LongTensor(
+                          [counter[i] for i in range(len(counter))]
+                      )
+        self.dataset = torch.LongTensor(dataset)
+
+        return self
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, index):
+        return self.dataset[index]
+
 def main(args):
-    # read all the files
+
+    # read files and create corpus
+    # each line in corpus is a list of co-occurring entities
     files = []
     for _, _, fs in os.walk(args["input_dir"]):
         files += [f for f in fs if f.endswith(".gz")]
@@ -53,27 +88,48 @@ def main(args):
     files = [os.path.join(args["input_dir"], f) for f in files]
 
     corpus = []
-    print("---------- loading corpus of co-occurring entities from .gz files ----------")
+    print("\n\n---------- loading corpus ----------")
     for i, file in tqdm(enumerate(files)):
         sentences = list(_open_file(file))
         corpus += sentences
-        # start = time()
-        # # open file
-        # sentences = list(_open_file(file))
-        #
-        # if i == 0:
-        #     w2v_model.build_vocab(sentences, update=False)
-        #     w2v_model.train(sentences, epochs=args["epochs"], total_examples=w2v_model.corpus_count)
-        # else:
-        #     w2v_model.build_vocab(sentences, update=True)
-        #     w2v_model.train(sentences, epochs=args["epochs"], total_examples=w2v_model.corpus_count)
-        #
-        # stop = time()
-
 
     print(f"Corpus length = {len(corpus)}")
     print(f"\n\n C1 = {corpus[0]}")
     print(f"\n\n C2 = {corpus[1]}")
+
+    # cuda options
+    use_cuda = args.cuda and torch.cuda.is_available()
+    device = torch.device('cuda' if use_cuda else 'cpu')
+
+    # seed
+    torch.manual_seed(args.seed)
+
+    dataset = Corpus.read_corpus(corpus)
+    counts = dataset.counts
+
+    print('vocab size: {}'.format(len(counts)))
+    print('words in train file: {}'.format(len(dataset)))
+    print()
+
+    model = nn.Sequential()
+    model.add_module('embed', GaussianEmbedding(args.size,
+                                                counts,
+                                                args.window,
+                                                args.batch_size,
+                                                args.covariance,
+                                                device))
+    model.to(device)
+    print('Model summary:')
+    print(model)
+    print()
+
+    train(model, dataset, args, device)
+    dump_result(model, dataset.index_word, args)
+
+
+
+
+
     start = time()
     w2v_model = Word2Vec(sentences=corpus,
                          min_count=args["min_count"],
