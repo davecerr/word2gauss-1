@@ -19,40 +19,12 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset
 
+################################ DATA HANDLING ################################
+
 def _open_file(filename):
     with gzip.open(filename) as infile:
         for _, line in enumerate(infile):
             yield json.loads(line)
-
-
-def get_predictions(validation_data, model, is_round=False):
-    actual = []
-    predicted = []
-
-    # iterate over full dataset
-    for _, record in validation_data.iterrows():
-        src = standardise_title(record["srcWikiTitle"])
-        dst = standardise_title(record["dstWikiTitle"])
-        act_sim = float(record["relatedness"])
-
-        # predict similarity
-        try:
-            pred_sim = float(model.wv.similarity(src, dst)) * 10.
-            if is_round:
-                pred_sim = np.round(pred_sim)
-        except KeyError:
-            continue
-
-        # add records
-        actual.append(act_sim)
-        predicted.append(pred_sim)
-
-    return np.array(actual), np.array(predicted)
-
-
-
-
-
 
 class Corpus(Dataset):
     def __init__(self):
@@ -84,8 +56,99 @@ class Corpus(Dataset):
     def __getitem__(self, index):
         return self.dataset[index]
 
-def main(args):
+################################### TRAINING ###################################
 
+def convert(batch, device):
+    target, context = batch
+    return target.to(device), context.to(device)
+
+
+def train(model, dataset, args, device):
+    model.train()
+    optimizer = optim.Adam(model.parameters())
+    start_time = time.time()
+
+    for epoch in range(1, args.epoch + 1):
+        train_iter = PairwiseWindowIter(dataset, args.window, args.batch_size)
+        print('------------------------------')
+        print('epoch: {}'.format(epoch))
+
+        for i, batch in enumerate(train_iter):
+            batch = convert(batch, device)
+            loss = model(batch)
+
+            elapsed = time.time() - start_time
+            throuput = args.batch_size / elapsed
+            prog = args.batch_size * (i + 1) / len(dataset) * 100
+            print('\r  progress: {:.2f}% words/s: {:.2f}'.format(
+                      min(prog, 100.), throuput
+                  ), end='')
+            sys.stdout.flush()
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            model.embed.regularize_weights()
+
+            start_time = time.time()
+
+        print()
+        print('  loss: {:.4f}'.format(loss.item()))
+
+        if args.debug:
+            torch.save(model.state_dict(),
+                       '{}_epoch{}.pt'.format(args.train.replace('.', '_'),
+                                              epoch)
+                       )
+
+#################################### SAVING ####################################
+
+def dump_result(model, index_word, args):
+    model.to('cpu')
+    mu_list, sigma_list = model.state_dict().values()
+
+    with open(args.save, 'w') as f:
+        f.write('{} {} {}\n'.format(len(index_word),
+                                    args.size,
+                                    args.covariance))
+
+        for i, (mu, sigma) in enumerate(zip(mu_list, sigma_list)):
+            mu_str = ' '.join('{0:.7f}'.format(i) for i in mu.tolist())
+            sigma_str = ' '.join('{0:.7f}'.format(i) for i in sigma.tolist())
+            f.write('{} {} {}\n'.format(index_word[i], mu_str, sigma_str))
+
+
+################################## PREDICTING ##################################
+
+def get_predictions(validation_data, model, is_round=False):
+    actual = []
+    predicted = []
+
+    # iterate over full dataset
+    for _, record in validation_data.iterrows():
+        src = standardise_title(record["srcWikiTitle"])
+        dst = standardise_title(record["dstWikiTitle"])
+        act_sim = float(record["relatedness"])
+
+        # predict similarity
+        try:
+            pred_sim = float(model.wv.similarity(src, dst)) * 10.
+            if is_round:
+                pred_sim = np.round(pred_sim)
+        except KeyError:
+            continue
+
+        # add records
+        actual.append(act_sim)
+        predicted.append(pred_sim)
+
+    return np.array(actual), np.array(predicted)
+
+
+##################################### MAIN #####################################
+
+def main(args):
     ############################################################################
     # each line in corpus is a list of co-occurring entities
     print("\n\n----------- LOADING CORPUS ----------")
