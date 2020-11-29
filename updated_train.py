@@ -3,6 +3,7 @@ import os
 from os.path import join
 from time import time
 from tqdm import tqdm
+from collections import Counter, defaultdict
 import ujson as json
 import pandas as pd
 import numpy as np
