@@ -139,11 +139,11 @@ def main(args):
     ############################################################################
     print("\n\n---------- CREATING MODEL ----------")
     model = nn.Sequential()
-    model.add_module('embed', GaussianEmbedding(args.size,
+    model.add_module('embed', GaussianEmbedding(args['size'],
                                                 counts,
-                                                args.window,
-                                                args.batch_size,
-                                                args.covariance,
+                                                args['window'],
+                                                args['batch_size'],
+                                                args['covariance'],
                                                 device))
     model.to(device)
     print('Model summary:')
