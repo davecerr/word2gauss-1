@@ -112,7 +112,7 @@ def main(args):
         pkl.dump(corpus, pickle_out)
         pickle_out.close()
 
-    print(f"Corpus length = {len(corpus)} \n\n")
+    print(f"Corpus length = {len(corpus)}")
 
     ############################################################################
     # cuda options
@@ -129,7 +129,6 @@ def main(args):
 
     print('vocab size: {}'.format(len(counts)))
     print('words in train file: {}'.format(len(dataset)))
-    print()
 
 
     ############################################################################
@@ -155,104 +154,62 @@ def main(args):
 
 
 
-    start = time()
-    w2v_model = Word2Vec(sentences=corpus,
-                         min_count=args["min_count"],
-                         window=args["window"],
-                         size=args["size"],
-                         sample=args["sample"],
-                         alpha=args["alpha"],
-                         min_alpha=args["min_alpha"],
-                         negative=args["negative"],
-                         hs=args["hs"],
-                         workers=args["n_jobs"])
-
-    w2v_model.train(corpus, epochs=args["epochs"], total_examples=w2v_model.corpus_count)
-
-    stop = time()
-
-    # load validation dataset
-    validation_data = pd.read_csv(args["validation_filepath"], sep=",")
-
-    # predict
-    actual, predicted = get_predictions(validation_data, w2v_model, is_round=True)
-
-    # calculate performance
-    pear_r, _ = pearsonr(actual, predicted)
-    spear_r, _ = spearmanr(actual, predicted)
-
-    print("Pearson R: {},  Spearman R: {}, Vocabulary: {}, on {} word pairs, Duration: {} mins".format(pear_r, spear_r,
-                                                                                                       len(
-                                                                                                           w2v_model.wv.vocab),
-                                                                                                       len(actual),
-                                                                                                       round((
-                                                                                                                     stop - start) / 60,
-                                                                                                             2)))
-
-    # save the model
-    w2v_model.save(join(args["output_dir"], "model.pkl"))
-
-    # load validation dataset
-    validation_data = pd.read_csv(args["validation_filepath"], sep=",")
-
-    # predict
-    actual, predicted = get_predictions(validation_data, w2v_model)
-
-    # calculate performance
-    pear_r, pear_p = pearsonr(actual, predicted)
-    spear_r, spear_p = spearmanr(actual, predicted)
-
-    results = {}
-    results["min_count"] = args["min_count"]
-    results["window"] = args["window"]
-    results["hs"] = args["hs"]
-    results["size"] = args["size"]
-    results["sample"] = args["sample"]
-    results["alpha"] = args["alpha"]
-    results["min_alpha"] = args["min_alpha"]
-    results["negative"] = args["negative"]
-    results["epochs"] = args["epochs"]
-
-    results["pearson_r"] = pear_r
-    results["pearson_p"] = pear_p
-    results["spearman_r"] = spear_r
-    results["spearman_p"] = spear_p
-
-    results = pd.DataFrame([results])
-
-    results.to_csv(join(args["output_dir"], "results.csv"), index=False)
 
 
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser()
+    size = 50
+    window = 5
+    epoch = 5
+    batch_size = 128
+    
+    parser = argparse.ArgumentParser(description='Gaussian embedding')
 
-    parser.add_argument('--output-dir', type=str, required=True,
-                        help="output filepath where the embedding model should be saved")
-    parser.add_argument('--input-dir', type=str, required=True, help="input directory to the data")
-    parser.add_argument('--n-jobs', type=int, default=10,
-                        help="Number of parallel cores to be used")
-    parser.add_argument('--min_count', type=int, default=1,
-                        help="Number of occurences of a token to be in the batch")
-    parser.add_argument('--window', type=int, default=8,
-                        help="The window to be considered")
-    parser.add_argument('--size', type=int, default=7,
-                        help="Number of parallel cores to be used")
-    parser.add_argument('--sample', type=float, default=20,
-                        help="the negative sample")
-    parser.add_argument('--alpha', type=float, default=0.01,
-                        help="Starting learning rate")
-    parser.add_argument('--min_alpha', type=float, default=7,
-                        help="Minimum learning rate that alpha can get")
-    parser.add_argument('--negative', type=int, default=20,
-                        help="Number of negative samples")
-    parser.add_argument('--epochs', type=int, default=7,
-                        help="Number of epochs to train")
-    parser.add_argument('--hs', type=int, default=0,
-                        help="If hierarchical softmax is used for loss")
-    parser.add_argument('--validation-filepath', type=str, default=7,
-                        help="Filepath to the validation dataset")
+    parser.add_argument('--input_dir', type=str, required=True, help="input directory to the data")
+
+    parser.add_argument('--save', type=str, required=True,
+                        help='path to save the result model')
+
+    parser.add_argument('--cuda', type=int, required=True,
+                        help='''
+                             set it to 1 for running on GPU, 0 for CPU
+                             (GPU is 5x-10x slower than CPU)
+                             ''')
+
+    parser.add_argument('--epoch', '-e', default=epoch, metavar='N', type=int,
+                        help='''
+                             number of training epochs
+                             (default: {})
+                             '''.format(epoch))
+
+    parser.add_argument('--size', '-s', default=size, metavar='N', type=int,
+                        help='''
+                             the dimension of embedding gaussian
+                             (default: {})
+                             '''.format(size))
+
+    parser.add_argument('--batch_size', '-b', default=batch_size,
+                        metavar='N', type=int,
+                        help='''
+                             minibatch size for training
+                             (default:{})
+                             '''.format(batch_size))
+
+    parser.add_argument('--covariance', '-c', default='diagonal',
+                        choices=['diagonal', 'spherical'],
+                        help='''
+                             covariance type ("diagonal", "spherical")
+                             (default: diagonal)
+                             ''')
+
+    parser.add_argument('--window', '-w', default=window,
+                        metavar='N', type=int,
+                        help='window size (default: {})'.format(window))
+
+    parser.add_argument('--seed', type=int, default='1234', help='random seed')
+
+    parser.add_argument('--debug', '-d', action='store_true')
 
     args = vars(parser.parse_args())
     main(args)
