@@ -105,16 +105,16 @@ def train(model, dataset, args, device):
         print('------------------------------')
         print('epoch: {}'.format(epoch))
 
-        for i, batch in enumerate(train_iter):
+        for i, batch in tqdm(enumerate(train_iter)):
             batch = convert(batch, device)
             loss = model(batch)
 
-            elapsed = time() - start_time
-            throuput = args['batch_size'] / elapsed
-            prog = args['batch_size'] * (i + 1) / len(dataset) * 100
-            print('\r  progress: {:.2f}% words/s: {:.2f}'.format(
-                      min(prog, 100.), throuput
-                  ), end='')
+            # elapsed = time() - start_time
+            # throuput = args['batch_size'] / elapsed
+            # prog = args['batch_size'] * (i + 1) / len(dataset) * 100
+            # print('\r  progress: {:.2f}% entities/s: {:.2f}'.format(
+            #           min(prog, 100.), throuput
+            #       ), end='')
             sys.stdout.flush()
 
             optimizer.zero_grad()
@@ -123,6 +123,7 @@ def train(model, dataset, args, device):
 
             model.embed.regularize_weights()
 
+            print(f"epoch {epoch} completed in {round((time() - start_time)/3600, 2)} hours")
             start_time = time()
 
         print()
