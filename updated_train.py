@@ -48,6 +48,7 @@ def main(args):
     # read all the files
     files = []
     for _, _, fs in os.walk(args["input_dir"]):
+        print(fs)
         files += [f for f in fs if f.endswith(".gz")]
 
     files = [os.path.join(args["input_dir"], f) for f in files]
