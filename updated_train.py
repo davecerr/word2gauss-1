@@ -156,7 +156,9 @@ def dump_result(model, index_entity, args):
         f.write('{} {} {}\n'.format(len(index_entity),
                                     args['size'],
                                     args['covariance']))
-
+        print("\n\n test \n\n")
+        print(f)
+        
         for i, (mu, sigma) in enumerate(zip(mu_list, sigma_list)):
             mu_str = ' '.join('{0:.7f}'.format(i) for i in mu.tolist())
             sigma_str = ' '.join('{0:.7f}'.format(i) for i in sigma.tolist())
@@ -300,9 +302,9 @@ def main(args):
     ############################################################################
     print("\n\n---------- SAVING ----------")
     dump_result(model, dataset.index_entity, args)
+    print(f"Model saved to {args['ouput_dir']}")
 
-
-
+    print()
 
 
 
@@ -319,14 +321,14 @@ if __name__ == "__main__":
 
     parser.add_argument('--input_dir', type=str, required=True, help="input directory to the data")
 
-    parser.add_argument('--output_dir', type=str, default='model.pth',
-                        help='path to save the result model')
-
     parser.add_argument('--cuda', type=int, required=True,
                         help='''
                              set it to 1 for running on GPU, 0 for CPU
                              (GPU is 5x-10x slower than CPU)
                              ''')
+
+    parser.add_argument('--output_dir', type=str, default='model.pth',
+                        help='path to save the result model')
 
     parser.add_argument('--MWE', type=int, default=0, help='''train a minimal working example
                                                               using only first two lists of
