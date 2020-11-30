@@ -321,7 +321,7 @@ if __name__ == "__main__":
 
     size = 50
     window = 5
-    epoch = 50
+    epoch = 5
     batch_size = 128
 
     parser = argparse.ArgumentParser(description='Gaussian embedding')
