@@ -161,8 +161,6 @@ def dump_result(model, index_entity, args):
         f.write('{} {} {}\n'.format(len(index_entity),
                                     args['size'],
                                     args['covariance']))
-        print("\n\n test \n\n")
-        print(f)
 
         for i, (mu, sigma) in enumerate(zip(mu_list, sigma_list)):
             mu_str = ' '.join('{0:.7f}'.format(i) for i in mu.tolist())
@@ -311,10 +309,9 @@ def main(args):
     pickle_loss = open("loss_list_d={}_epochs={}.pkl".format(args['size'],args['epoch']),"wb")
     pkl.dump(loss_list, pickle_loss)
     pickle_loss.close()
+    print(f"Training loss list saved to loss_list_d={args['size']}_epochs={args['epoch']}.pkl")
 
-
-
-
+    ############################################################################
 
 if __name__ == "__main__":
     import argparse
