@@ -158,7 +158,7 @@ def dump_result(model, index_entity, args):
                                     args['covariance']))
         print("\n\n test \n\n")
         print(f)
-        
+
         for i, (mu, sigma) in enumerate(zip(mu_list, sigma_list)):
             mu_str = ' '.join('{0:.7f}'.format(i) for i in mu.tolist())
             sigma_str = ' '.join('{0:.7f}'.format(i) for i in sigma.tolist())
@@ -327,7 +327,7 @@ if __name__ == "__main__":
                              (GPU is 5x-10x slower than CPU)
                              ''')
 
-    parser.add_argument('--output_dir', type=str, default='model.pth',
+    parser.add_argument('--output_dir', type=str, default='model.txt',
                         help='path to save the result model')
 
     parser.add_argument('--MWE', type=int, default=0, help='''train a minimal working example
