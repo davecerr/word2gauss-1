@@ -37,11 +37,11 @@ class Corpus(Dataset):
 
         # loop through each list (of co-occurring entities) in the corpus
         for entity_list in tqdm(corpus_list):
-            if verbose:
+            if args['verbose']:
                 print(f"entity list = {entity_list}")
             # loop through each entity in that list
             for entity in entity_list:
-                if verbose:
+                if args['verbose']:
                     print(f"entity = {entity}")
                 self.entity_index[entity]
                 counter[self.entity_index[entity]] += 1
@@ -326,6 +326,8 @@ if __name__ == "__main__":
                              set it to 1 for running on GPU, 0 for CPU
                              (GPU is 5x-10x slower than CPU)
                              ''')
+
+    parser.add_argument('--verbose', type=int, default=0, help='print dataset details')
 
     parser.add_argument('--epoch', '-e', default=epoch, metavar='N', type=int,
                         help='''
