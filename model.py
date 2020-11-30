@@ -71,7 +71,7 @@ class GaussianEmbedding(nn.Module):
         context_neg = next(self.sample_iter)[:batch_size]
 
         print("\n START \n")
-        # note this is window size less than words in file
+        # note this is window size less than words in corpus
         print(f"target shape = {target.shape}")
         print(f"context shape = {context.shape}")
 
@@ -84,16 +84,16 @@ class GaussianEmbedding(nn.Module):
         print("\n END \n")
 
         # positive sample
-        mean_pos = self.mu(context_pos)
+        mean_pos = self.mu(context_pos) # [corpus_len-window, window-1, size]
         print(mean_pos.shape)
-        print(mean_pos)
         cov_pos = (torch.eye(self.embed_size, device=self.device) *
                    self.sigma(context_pos).view(
-                           batch_size, -1, 1, self.embed_size
-                       )
-                   )
-        context_pos_dist = MultivariateNormal(mean_pos, cov_pos)
+                           batch_size, -1, 1, self.embed_size)) # [corpus_len-window, window-1, size]
+        print(cov_pos.shape)
 
+        context_pos_dist = MultivariateNormal(mean_pos, cov_pos)
+        print(context_pos_dist)
+        
         # negative sample
         mean_neg = self.mu(context_neg)
         cov_neg = (torch.eye(self.embed_size, device=self.device) *
