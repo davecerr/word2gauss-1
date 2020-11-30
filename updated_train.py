@@ -137,7 +137,7 @@ def train(model, dataset, args, device):
 
             model.embed.regularize_weights()
 
-        print(f"epoch {epoch} completed in {round((time() - start_time)/3600, 2)} hours")
+        print(f"\nepoch {epoch} completed in {round((time() - start_time)/3600, 2)} hours")
         start_time = time()
 
         print()
@@ -307,7 +307,7 @@ def main(args):
     ############################################################################
     print("\n\n---------- SAVING ----------")
     dump_result(model, dataset.index_entity, args)
-    print(f"Model saved to {args['output_dir']}_{args['size']}_{args['epoch']}.txt")
+    print(f"Model saved to model_{args['size']}_{args['epoch']}.txt")
     pickle_loss = open("loss_list_d={}_epochs={}.pkl".format(args['size'],args['epoch']),"wb")
     pkl.dump(loss_list, pickle_loss)
     pickle_loss.close()
