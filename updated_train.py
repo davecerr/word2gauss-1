@@ -53,7 +53,9 @@ class Corpus(Dataset):
         self.counts = torch.LongTensor(
                           [counter[i] for i in range(len(counter))]
                       )
-        # dataset is a torch tensor where the original corpus
+        # original corpus is re-expressed as torch tensor
+        # if i'th entry is idx then entity d[idx] is i'th entity in original corpus
+        # note all new lines are ignored - windows can overlap different entity_lists!!!
         self.dataset = torch.LongTensor(dataset)
 
         return self
@@ -256,17 +258,24 @@ def main(args):
 
     ############################################################################
     print("\n\n---------- CREATING DATASET ----------")
-    print(f"Corpus 0 = {corpus[0]}")
-    print(f"Corpus 1 = {corpus[1]}")
-    dataset = Corpus.read_corpus(corpus[:2])
-    counts = dataset.counts
-    print(f"Corpus index_entity = {dataset.index_entity}")
-    print(dataset.dataset)
-    print(dataset.counts)
+    # args['MWE'] = 1 indicates build a minimum working example from data subset
+    if args['MWE'] == 0:
+        dataset = Corpus.read_corpus(corpus)
+    else:
+        dataset = Corpus.read_corpus(corpus[:2])
+        print(f"Corpus 0 = {corpus[0]}")
+        print(f"Corpus 1 = {corpus[1]}")
 
+    # print details if required
+    if args['verbose']:
+        print(f"Corpus index_entity = {dataset.index_entity}")
+        print(f"Dataset = {dataset.dataset}")
+        print(f"Counts = {dataset.counts}")
+
+    # get counts, vocab size and corpus size
+    counts = dataset.counts
     print('vocab size: {}'.format(len(counts)))
     print('words in train file: {}'.format(len(dataset)))
-
 
     ############################################################################
     print("\n\n---------- CREATING MODEL ----------")
@@ -287,7 +296,7 @@ def main(args):
 
     ############################################################################
     print("\n\n---------- SAVING ----------")
-    dump_result(model, dataset.index_word, args)
+    dump_result(model, dataset.index_entity, args)
 
 
 
@@ -316,7 +325,11 @@ if __name__ == "__main__":
                              (GPU is 5x-10x slower than CPU)
                              ''')
 
-    parser.add_argument('--verbose', type=int, default=0, help='print dataset details')
+    parser.add_argument('--MWE', type=int, default=0, help='''train a minimal working example
+                                                              using only first two lists of
+                                                              co-occurring entities (default: 0)''')
+
+    parser.add_argument('--verbose', type=int, default=0, help='print dataset details (default: 0)')
 
     parser.add_argument('--epoch', '-e', default=epoch, metavar='N', type=int,
                         help='''
