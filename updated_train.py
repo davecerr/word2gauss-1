@@ -148,19 +148,19 @@ def train(model, dataset, args, device):
 
 #################################### SAVING ####################################
 
-def dump_result(model, index_word, args):
+def dump_result(model, index_entity, args):
     model.to('cpu')
     mu_list, sigma_list = model.state_dict().values()
 
-    with open(args['save'], 'w') as f:
-        f.write('{} {} {}\n'.format(len(index_word),
+    with open(args['output_dir'], 'w') as f:
+        f.write('{} {} {}\n'.format(len(index_entity),
                                     args['size'],
                                     args['covariance']))
 
         for i, (mu, sigma) in enumerate(zip(mu_list, sigma_list)):
             mu_str = ' '.join('{0:.7f}'.format(i) for i in mu.tolist())
             sigma_str = ' '.join('{0:.7f}'.format(i) for i in sigma.tolist())
-            f.write('{} {} {}\n'.format(index_word[i], mu_str, sigma_str))
+            f.write('{} {} {}\n'.format(index_entity[i], mu_str, sigma_str))
 
 
 ################################## PREDICTING ##################################
@@ -206,6 +206,9 @@ def get_predictions(validation_data, model, is_round=False):
 def main(args):
 
     ############################################################################
+    if args['MWE']:
+        print("\n\n >>>>>>>>>> WARNING: YOU ARE USING A DATA SUBSET (MWE=1) <<<<<<<<<<\n\n")
+
     print("\n\n---------- ARGUMENTS ----------")
     print("\nGAUSSIAN:")
     print(f"Dimension = {args['size']}")
