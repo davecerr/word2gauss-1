@@ -68,17 +68,25 @@ class GaussianEmbedding(nn.Module):
         target_dist = MultivariateNormal(mean, cov)
 
         context_pos = context
+        context_neg = next(self.sample_iter)[:batch_size]
+
         print("\n START \n")
+        # note this is window size less than words in file
         print(f"target shape = {target.shape}")
         print(f"context shape = {context.shape}")
+
+        # target is just mapping to self
         print(f"target = {target}")
-        print(context_pos)
-        context_neg = next(self.sample_iter)[:batch_size]
-        print(context_neg)
+        # +ve context maps to the (window-1) other entities in the window
+        print(f"+ve context = {context_pos}")
+        # -ve context maps to the entities not in the current window
+        print(f"-ve context = {context_neg}")
         print("\n END \n")
 
         # positive sample
         mean_pos = self.mu(context_pos)
+        print(mean_pos.shape)
+        print(mean_pos)
         cov_pos = (torch.eye(self.embed_size, device=self.device) *
                    self.sigma(context_pos).view(
                            batch_size, -1, 1, self.embed_size
