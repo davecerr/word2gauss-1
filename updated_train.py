@@ -261,9 +261,9 @@ def main(args):
     print(f"Corpus 0 = {corpus[0]}")
     dataset = Corpus.read_corpus(corpus[0])
     counts = dataset.counts
-    print(f"Corpus index_entity = {corpus.index_entity}")
-    print(corpus.dataset)
-    print(corpus.counts)
+    print(f"Corpus index_entity = {dataset.index_entity}")
+    print(dataset.dataset)
+    print(dataset.counts)
 
     print('vocab size: {}'.format(len(counts)))
     print('words in train file: {}'.format(len(dataset)))
