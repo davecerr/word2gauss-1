@@ -319,7 +319,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--input_dir', type=str, required=True, help="input directory to the data")
 
-    parser.add_argument('--output_dir', type=str, required=True,
+    parser.add_argument('--output_dir', type=str, default='model.pth',
                         help='path to save the result model')
 
     parser.add_argument('--cuda', type=int, required=True,
