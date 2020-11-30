@@ -216,39 +216,28 @@ def main(args):
     ############################################################################
     # each line in corpus is a list of co-occurring entities
     print("\n\n----------- LOADING CORPUS ----------")
-    # if os.path.exists("corpus.pkl"):
-    #     start = time()
-    #     print("loading from existing pickle")
-    #     pickle_in = open("corpus.pkl","rb")
-    #     corpus = pkl.load(pickle_in)
-    #     end = time()
-    #     print(f"loaded in {round(end - start,2)} secs")
-    # else:
-    #     print("loading from gzip files")
-    #     files = []
-    #     for _, _, fs in os.walk(args["input_dir"]):
-    #         files += [f for f in fs if f.endswith(".gz")]
-    #
-    #     files = [os.path.join(args["input_dir"], f) for f in files]
-    #     corpus = []
-    #     for i, file in tqdm(enumerate(files)):
-    #         sentences = list(_open_file(file))
-    #         corpus += sentences
-    #
-    #     pickle_out = open("corpus.pkl","wb")
-    #     pkl.dump(corpus, pickle_out)
-    #     pickle_out.close()
+    if os.path.exists("corpus.pkl"):
+        start = time()
+        print("loading from existing pickle")
+        pickle_in = open("corpus.pkl","rb")
+        corpus = pkl.load(pickle_in)
+        end = time()
+        print(f"loaded in {round(end - start,2)} secs")
+    else:
+        print("loading from gzip files")
+        files = []
+        for _, _, fs in os.walk(args["input_dir"]):
+            files += [f for f in fs if f.endswith(".gz")]
 
-    print("loading from gzip files")
-    files = []
-    for _, _, fs in os.walk(args["input_dir"]):
-        files += [f for f in fs if f.endswith(".gz")]
+        files = [os.path.join(args["input_dir"], f) for f in files]
+        corpus = []
+        for i, file in tqdm(enumerate(files)):
+            sentences = list(_open_file(file))
+            corpus += sentences
 
-    files = [os.path.join(args["input_dir"], f) for f in files]
-    corpus = []
-    for i, file in tqdm(enumerate(files)):
-        sentences = list(_open_file(file))
-        corpus += sentences
+        pickle_out = open("corpus.pkl","wb")
+        pkl.dump(corpus, pickle_out)
+        pickle_out.close()
 
     print(f"Corpus length = {len(corpus)}")
 
