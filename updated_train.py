@@ -35,18 +35,25 @@ class Corpus(Dataset):
         counter = Counter()
         dataset = []
 
+        # loop through each list (of co-occurring entities) in the corpus
         for entity_list in tqdm(corpus_list):
-            print(f"entity list = {entity_list}")
+            if verbose:
+                print(f"entity list = {entity_list}")
+            # loop through each entity in that list
             for entity in entity_list:
-                print(f"entity = {entity}")
+                if verbose:
+                    print(f"entity = {entity}")
                 self.entity_index[entity]
                 counter[self.entity_index[entity]] += 1
                 dataset.append(self.entity_index[entity])
 
+        # entity_index is a dictionary d[idx] = entity
         self.index_entity = {v: k for k, v in self.entity_index.items()}
+        # counts is a torch tensor. the value at each idx is the count of the entity @ d[idx]
         self.counts = torch.LongTensor(
                           [counter[i] for i in range(len(counter))]
                       )
+        # dataset is a torch tensor where the original corpus
         self.dataset = torch.LongTensor(dataset)
 
         return self
@@ -262,7 +269,7 @@ def main(args):
     print("\n\n---------- CREATING DATASET ----------")
     print(f"Corpus 0 = {corpus[0]}")
     print(f"Corpus 1 = {corpus[1]}")
-    dataset = Corpus.read_corpus(corpus[:1])
+    dataset = Corpus.read_corpus(corpus[:2])
     counts = dataset.counts
     print(f"Corpus index_entity = {dataset.index_entity}")
     print(dataset.dataset)
