@@ -69,6 +69,8 @@ class GaussianEmbedding(nn.Module):
 
         context_pos = context
         print("\n START \n")
+        print(f"target shape = {target.shape}")
+        print(f"context shape = {context.shape}")
         print(f"target = {target}")
         print(context_pos)
         context_neg = next(self.sample_iter)[:batch_size]
