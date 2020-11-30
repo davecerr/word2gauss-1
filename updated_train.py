@@ -258,7 +258,7 @@ def main(args):
 
     ############################################################################
     print("\n\n---------- CREATING DATASET ----------")
-    print(f"Corpus 0 = {corpus[0]})
+    print(f"Corpus 0 = {corpus[0]}")
     dataset = Corpus.read_corpus(corpus[0])
     counts = dataset.counts
     print(f"Corpus index_entity = {corpus.index_entity}")
