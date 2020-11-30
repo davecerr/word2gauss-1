@@ -148,7 +148,7 @@ def train(model, dataset, args, device):
                        '{}_epoch{}.pt'.format(args['input_dir'].replace('.', '_'),
                                               epoch)
                        )
-   return loss_list
+    return loss_list
 
 #################################### SAVING ####################################
 
