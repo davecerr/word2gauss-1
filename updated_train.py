@@ -36,7 +36,9 @@ class Corpus(Dataset):
         dataset = []
 
         for entity_list in tqdm(corpus_list):
+            print(f"entity list = {entity_list}")
             for entity in entity_list:
+                print(f"entity = {entity}")
                 self.entity_index[entity]
                 counter[self.entity_index[entity]] += 1
                 dataset.append(self.entity_index[entity])
