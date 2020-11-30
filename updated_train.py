@@ -212,8 +212,8 @@ def main(args):
 
     ############################################################################
     if args['MWE']:
-        print("\n\n\n\n >>>>>>>>>> WARNING: YOU ARE USING A DATA SUBSET (MWE=1) <<<<<<<<<<")
-
+        print("\n\n\n\n>>>>>>>>>> WARNING: YOU ARE USING A DATA SUBSET <<<<<<<<<<")
+        print(">>>>>>>>>> For full data set MWE=0 <<<<<<<<<<")
     print("\n\n---------- ARGUMENTS ----------")
     print("\nGAUSSIAN:")
     print(f"Dimension = {args['size']}")

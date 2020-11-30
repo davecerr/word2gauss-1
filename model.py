@@ -84,16 +84,19 @@ class GaussianEmbedding(nn.Module):
         print("\n END \n")
 
         # positive sample
-        mean_pos = self.mu(context_pos) # [corpus_len-window, window-1, size]
+        # mean shape: [corpus_len-window, window-1, size]
+        mean_pos = self.mu(context_pos)
         print(mean_pos.shape)
+        # cov shape: [corpus_len-window, window-1, size, size]
         cov_pos = (torch.eye(self.embed_size, device=self.device) *
                    self.sigma(context_pos).view(
-                           batch_size, -1, 1, self.embed_size)) # [corpus_len-window, window-1, size]
+                           batch_size, -1, 1, self.embed_size))
         print(cov_pos.shape)
 
+        # this is corpus_len-window separate multivariate normals. Should it be vocab_size?
         context_pos_dist = MultivariateNormal(mean_pos, cov_pos)
         print(context_pos_dist)
-        
+
         # negative sample
         mean_neg = self.mu(context_neg)
         cov_neg = (torch.eye(self.embed_size, device=self.device) *
