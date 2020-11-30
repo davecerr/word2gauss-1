@@ -68,7 +68,12 @@ class GaussianEmbedding(nn.Module):
         target_dist = MultivariateNormal(mean, cov)
 
         context_pos = context
+        print("\n START \n")
+        print(f"target = {target}")
+        print(context_pos)
         context_neg = next(self.sample_iter)[:batch_size]
+        print(context_neg)
+        print("\n END \n")
 
         # positive sample
         mean_pos = self.mu(context_pos)

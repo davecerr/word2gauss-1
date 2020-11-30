@@ -309,7 +309,7 @@ def main(args):
     pickle_loss = open("loss_list_d={}_epochs={}.pkl".format(args['size'],args['epoch']),"wb")
     pkl.dump(loss_list, pickle_loss)
     pickle_loss.close()
-    print(f"Training loss list saved to loss_list_d={args['size']}_epochs={args['epoch']}.pkl")
+    print(f"Losses saved to loss_list_d={args['size']}_epochs={args['epoch']}.pkl")
 
     ############################################################################
 
