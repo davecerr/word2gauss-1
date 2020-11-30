@@ -111,21 +111,24 @@ def train(model, dataset, args, device):
     optimizer = optim.Adam(model.parameters())
     start_time = time()
 
+    loss_list = []
+
     for epoch in range(1, args['epoch'] + 1):
         train_iter = PairwiseWindowIter(dataset, args['window'], args['batch_size'])
         print('------------------------------')
         print('epoch: {}'.format(epoch))
 
-        for i, batch in tqdm(enumerate(train_iter)):
+        for i, batch in enumerate(train_iter):
             batch = convert(batch, device)
             loss = model(batch)
+            loss_list.append(loss)
 
-            # elapsed = time() - start_time
-            # throuput = args['batch_size'] / elapsed
-            # prog = args['batch_size'] * (i + 1) / len(dataset) * 100
-            # print('\r  progress: {:.2f}% entities/s: {:.2f}'.format(
-            #           min(prog, 100.), throuput
-            #       ), end='')
+            elapsed = time() - start_time
+            throuput = args['batch_size'] / elapsed
+            prog = args['batch_size'] * (i + 1) / len(dataset) * 100
+            print('\r  progress: {:.2f}% entities/s: {:.2f}'.format(
+                      min(prog, 100.), throuput
+                  ), end='')
             sys.stdout.flush()
 
             optimizer.zero_grad()
@@ -145,6 +148,7 @@ def train(model, dataset, args, device):
                        '{}_epoch{}.pt'.format(args['input_dir'].replace('.', '_'),
                                               epoch)
                        )
+   return loss_list
 
 #################################### SAVING ####################################
 
@@ -152,7 +156,8 @@ def dump_result(model, index_entity, args):
     model.to('cpu')
     mu_list, sigma_list = model.state_dict().values()
 
-    with open(args['output_dir'], 'w') as f:
+    filename = "model_d={}_epochs={}.txt".format(args['size'],args['epoch'])
+    with open(filename, 'w') as f:
         f.write('{} {} {}\n'.format(len(index_entity),
                                     args['size'],
                                     args['covariance']))
@@ -209,7 +214,7 @@ def main(args):
 
     ############################################################################
     if args['MWE']:
-        print("\n\n >>>>>>>>>> WARNING: YOU ARE USING A DATA SUBSET (MWE=1) <<<<<<<<<<\n\n")
+        print("\n\n\n\n >>>>>>>>>> WARNING: YOU ARE USING A DATA SUBSET (MWE=1) <<<<<<<<<<")
 
     print("\n\n---------- ARGUMENTS ----------")
     print("\nGAUSSIAN:")
@@ -297,13 +302,15 @@ def main(args):
 
     ############################################################################
     print("\n\n---------- TRAINING ----------")
-    train(model, dataset, args, device)
+    loss_list = train(model, dataset, args, device)
 
     ############################################################################
     print("\n\n---------- SAVING ----------")
     dump_result(model, dataset.index_entity, args)
-    print(f"Model saved to {args['output_dir']}")
-
+    print(f"Model saved to {args['output_dir']}_{args['size']}_{args['epoch']}.txt")
+    pickle_loss = open("loss_list_d={}_epochs={}.pkl".format(args['size'],args['epoch']),"wb")
+    pkl.dump(loss_list, pickle_loss)
+    pickle_loss.close()
 
 
 
@@ -326,9 +333,6 @@ if __name__ == "__main__":
                              set it to 1 for running on GPU, 0 for CPU
                              (GPU is 5x-10x slower than CPU)
                              ''')
-
-    parser.add_argument('--output_dir', type=str, default='model.txt',
-                        help='path to save the result model')
 
     parser.add_argument('--MWE', type=int, default=0, help='''train a minimal working example
                                                               using only first two lists of
