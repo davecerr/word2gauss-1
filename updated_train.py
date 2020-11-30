@@ -268,14 +268,14 @@ def main(args):
         dataset = Corpus.read_corpus(corpus)
     else:
         dataset = Corpus.read_corpus(corpus[:2])
-        print(f"Corpus 0 = {corpus[0]}")
-        print(f"Corpus 1 = {corpus[1]}")
+        print(f"\nCorpus 0 = {corpus[0]}")
+        print(f"\nCorpus 1 = {corpus[1]}")
 
     # print details if required
     if args['verbose']:
-        print(f"Corpus index_entity = {dataset.index_entity}")
-        print(f"Dataset = {dataset.dataset}")
-        print(f"Counts = {dataset.counts}")
+        print(f"\nCorpus index_entity = {dataset.index_entity}")
+        print(f"\nDataset = {dataset.dataset}")
+        print(f"\nCounts = {dataset.counts}")
 
     # get counts, vocab size and corpus size
     counts = dataset.counts
@@ -302,9 +302,9 @@ def main(args):
     ############################################################################
     print("\n\n---------- SAVING ----------")
     dump_result(model, dataset.index_entity, args)
-    print(f"Model saved to {args['ouput_dir']}")
+    print(f"Model saved to {args['output_dir']}")
 
-    print()
+
 
 
 
@@ -314,7 +314,7 @@ if __name__ == "__main__":
 
     size = 50
     window = 5
-    epoch = 5
+    epoch = 50
     batch_size = 128
 
     parser = argparse.ArgumentParser(description='Gaussian embedding')
