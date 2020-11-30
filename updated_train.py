@@ -271,6 +271,7 @@ def main(args):
         dataset = Corpus.read_corpus(corpus)
     else:
         dataset = Corpus.read_corpus(corpus[:2])
+        dataset = dateset[:10]
         print(f"\nCorpus 0 = {corpus[0]}")
         print(f"\nCorpus 1 = {corpus[1]}")
 
