@@ -138,7 +138,7 @@ def train(model, dataset, args, device):
 
             model.embed.regularize_weights()
 
-        print(f"\r  epoch {epoch} completed in {round((time() - start_time)/3600, 2)} hours")
+        print(f"\n  epoch {epoch} completed in {round((time() - start_time)/3600, 2)} hours")
         start_time = time()
 
         print()
