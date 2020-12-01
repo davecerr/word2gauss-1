@@ -270,9 +270,9 @@ def main(args):
     print("\n\n---------- CREATING DATASET ----------")
     # args['MWE'] = 1 indicates build a minimum working example from data subset
     if args['MWE'] == 0:
-        dataset = Corpus(args['verbose']).read_corpus(corpus)
+        dataset = Corpus().read_corpus(corpus, args['verbose'])
     else:
-        dataset = Corpus(args['verbose']).read_corpus(corpus[:2])
+        dataset = Corpus().read_corpus(corpus[:2], args['verbose'])
         print(f"\nCorpus 0 = {corpus[0]}")
         print(f"\nCorpus 1 = {corpus[1]}")
 
