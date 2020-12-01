@@ -278,6 +278,7 @@ def main(args):
     # print details if required
     if args['verbose']:
         print(f"\nCorpus index_entity = {dataset.index_entity}")
+        print(f"\nDataset length = {dataset.dataset.shape}")
         print(f"\nDataset = {dataset.dataset}")
         print(f"\nCounts = {dataset.counts}")
 
