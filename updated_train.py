@@ -32,17 +32,16 @@ class Corpus(Dataset):
     @staticmethod
     def read_corpus(corpus_list, verbose):
         self = Corpus()
-        self.verbose = verbose
         counter = Counter()
         dataset = []
 
         # loop through each list (of co-occurring entities) in the corpus
         for entity_list in tqdm(corpus_list):
-            if self.verbose:
+            if verbose:
                 print(f"entity list = {entity_list}")
             # loop through each entity in that list
             for entity in entity_list:
-                if self.verbose:
+                if verbose:
                     print(f"entity = {entity}")
                 self.entity_index[entity]
                 counter[self.entity_index[entity]] += 1
