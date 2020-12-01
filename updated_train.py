@@ -76,6 +76,7 @@ class PairwiseWindowIter(object):
         self.batch_size = batch_size
 
         half_w = window % 2 + 1
+        print(f"half_w = {half_w}")
         self.order = torch.randperm(len(dataset) - half_w * 2) + half_w
         self.offset = torch.cat((torch.arange(-half_w, 0),
                                  torch.arange(1, half_w + 1)))

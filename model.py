@@ -88,7 +88,6 @@ class GaussianEmbedding(nn.Module):
 
 
 
-
         ###### CONTEXT DISTRIBUTIONS ######
         # context_dist has
         # mean shape [corpus_len-window, window-1, size]
@@ -117,6 +116,8 @@ class GaussianEmbedding(nn.Module):
             print(f"mean_pos = {mean_pos.shape}")
             print(f"cov_pos = {cov_pos.shape}")
             print(f"context_pos_dist = {context_pos_dist}")
+
+
 
         ###### LOSS ######
         # loss = max(0, m - [KL_pos - KL_neg])
