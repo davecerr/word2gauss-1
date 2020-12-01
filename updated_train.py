@@ -26,13 +26,13 @@ def _open_file(filename):
             yield json.loads(line)
 
 class Corpus(Dataset):
-    def __init__(self, verbose):
+    def __init__(self):
         self.entity_index = defaultdict(lambda: len(self.entity_index))
-        self.verbose = verbose
 
     @staticmethod
     def read_corpus(corpus_list):
-        self = Corpus(self.verbose)
+        self = Corpus(verbose)
+        self.verbose = verbose
         counter = Counter()
         dataset = []
 
