@@ -56,6 +56,7 @@ class GaussianEmbedding(nn.Module):
                                                      self.sigma_max))
 
     def forward(self, input):
+        print(f"input shape = {input.shape}")
         target, context = input
         batch_size = len(target)
 
@@ -75,7 +76,8 @@ class GaussianEmbedding(nn.Module):
         print(f"target shape = {target.shape}")
         print(f"context shape = {context.shape}")
 
-        # target is just mapping to self
+        # target repeats the current entity (window-1) times to allow for easy comparison
+        # with the context [also (window-1) size] when computing KLs below (same size tensors)
         print(f"target = {target}")
         # +ve context maps to the (window-1) other entities in the window
         print(f"+ve context = {context_pos}")
