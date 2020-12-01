@@ -42,7 +42,7 @@ class Corpus(Dataset):
                 print(f"entity list = {entity_list}")
             # loop through each entity in that list
             for entity in entity_list:
-                if self.'verbose':
+                if self.verbose:
                     print(f"entity = {entity}")
                 self.entity_index[entity]
                 counter[self.entity_index[entity]] += 1
