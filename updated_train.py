@@ -26,8 +26,9 @@ def _open_file(filename):
             yield json.loads(line)
 
 class Corpus(Dataset):
-    def __init__(self):
+    def __init__(self, verbose):
         self.entity_index = defaultdict(lambda: len(self.entity_index))
+        self.verbose = verbose
 
     @staticmethod
     def read_corpus(corpus_list):
@@ -37,11 +38,11 @@ class Corpus(Dataset):
 
         # loop through each list (of co-occurring entities) in the corpus
         for entity_list in tqdm(corpus_list):
-            if args['verbose']:
+            if self.verbose:
                 print(f"entity list = {entity_list}")
             # loop through each entity in that list
             for entity in entity_list:
-                if args['verbose']:
+                if self.'verbose':
                     print(f"entity = {entity}")
                 self.entity_index[entity]
                 counter[self.entity_index[entity]] += 1
@@ -269,9 +270,9 @@ def main(args):
     print("\n\n---------- CREATING DATASET ----------")
     # args['MWE'] = 1 indicates build a minimum working example from data subset
     if args['MWE'] == 0:
-        dataset = Corpus.read_corpus(corpus)
+        dataset = Corpus(args['verbose']).read_corpus(corpus)
     else:
-        dataset = Corpus.read_corpus(corpus[:2])
+        dataset = Corpus(args['verbose']).read_corpus(corpus[:2])
         print(f"\nCorpus 0 = {corpus[0]}")
         print(f"\nCorpus 1 = {corpus[1]}")
 
