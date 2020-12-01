@@ -30,8 +30,8 @@ class Corpus(Dataset):
         self.entity_index = defaultdict(lambda: len(self.entity_index))
 
     @staticmethod
-    def read_corpus(corpus_list):
-        self = Corpus(verbose)
+    def read_corpus(corpus_list, verbose):
+        self = Corpus()
         self.verbose = verbose
         counter = Counter()
         dataset = []
