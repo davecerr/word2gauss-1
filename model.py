@@ -56,7 +56,7 @@ class GaussianEmbedding(nn.Module):
                                                      self.sigma_max))
 
     def forward(self, input):
-        print(f"input shape = {input.shape}")
+        print(f"input = {input}")
         target, context = input
         batch_size = len(target)
 
