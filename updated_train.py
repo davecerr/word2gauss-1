@@ -32,7 +32,7 @@ class Corpus(Dataset):
 
     @staticmethod
     def read_corpus(corpus_list):
-        self = Corpus()
+        self = Corpus(verbose)
         counter = Counter()
         dataset = []
 
