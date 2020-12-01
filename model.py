@@ -6,9 +6,11 @@ from torch.distributions.multivariate_normal import MultivariateNormal
 
 class GaussianEmbedding(nn.Module):
     def __init__(self, embed_size, counts, window, batch_size, covariance_type,
-                 device, mu_0=0.1, mu_c=2.0, sigma_min=0.5, sigma_max=2.0,
+                 device, verbose, mu_0=0.1, mu_c=2.0, sigma_min=0.5, sigma_max=2.0,
                  margin=0.1, power=0.75):
         super(GaussianEmbedding, self).__init__()
+
+        self.verbose = verbose
 
         self.vocab_size = len(counts)
         self.embed_size = embed_size
@@ -56,7 +58,6 @@ class GaussianEmbedding(nn.Module):
                                                      self.sigma_max))
 
     def forward(self, input):
-        print(f"input = {input}")
         target, context = input
         batch_size = len(target)
 
@@ -71,33 +72,38 @@ class GaussianEmbedding(nn.Module):
         context_pos = context
         context_neg = next(self.sample_iter)[:batch_size]
 
-        print("\n START \n")
-        # note this is window size less than words in corpus
-        print(f"target shape = {target.shape}")
-        print(f"context shape = {context.shape}")
+        if self.verbose:
+            # note target and context are corpus_len - window
+            print(f"target shape = {target.shape}")
+            print(f"context shape = {context.shape}")
 
-        # target repeats the current entity (window-1) times to allow for easy comparison
-        # with the context [also (window-1) size] when computing KLs below (same size tensors)
-        print(f"target = {target}")
-        # +ve context maps to the (window-1) other entities in the window
-        print(f"+ve context = {context_pos}")
-        # -ve context maps to the entities not in the current window
-        print(f"-ve context = {context_neg}")
-        print("\n END \n")
+            # target repeats the current entity (window-1) times to allow for easy comparison
+            # with the context [also (window-1) size] when computing KLs below (same size tensors)
+            print(f"target = {target}")
+            # +ve context maps to the (window-1) other entities in the window
+            print(f"+ve context = {context_pos}")
+            # -ve context maps to the entities not in the current window
+            print(f"-ve context = {context_neg}")
+            print(f"target_dist = {target_dist}")
+
+
+
+
+        ###### CONTEXT DISTRIBUTIONS ######
+        # context_dist has
+        # mean shape [corpus_len-window, window-1, size]
+        # cov shape [corpus_len-window, window-1, size, size]
+        # the first dimension tracks which window we are referring to
+        # the second dimension tracks which entities appear in that window
+        # the third (and fourth) dimensions record the current mean and cov values
 
         # positive sample
-        # mean shape: [corpus_len-window, window-1, size]
         mean_pos = self.mu(context_pos)
-        print(mean_pos.shape)
-        # cov shape: [corpus_len-window, window-1, size, size]
         cov_pos = (torch.eye(self.embed_size, device=self.device) *
                    self.sigma(context_pos).view(
                            batch_size, -1, 1, self.embed_size))
-        print(cov_pos.shape)
 
-        # this is corpus_len-window separate multivariate normals. Should it be vocab_size?
         context_pos_dist = MultivariateNormal(mean_pos, cov_pos)
-        print(context_pos_dist)
 
         # negative sample
         mean_neg = self.mu(context_neg)
@@ -107,6 +113,18 @@ class GaussianEmbedding(nn.Module):
                        )
                    )
         context_neg_dist = MultivariateNormal(mean_neg, cov_neg)
+        if self.verbose:
+            print(f"mean_pos = {mean_pos.shape}")
+            print(f"cov_pos = {cov_pos.shape}")
+            print(f"context_pos_dist = {context_pos_dist}")
+
+        ###### LOSS ######
+        # loss = max(0, m - [KL_pos - KL_neg])
+        # if KL_pos - KL_neg >= m then no loss accumulated
+        # if KL_pos - KL_neg < m then m - [KL_pos - KL_neg] added to loss
+        # this encourages the target distn to have a KL (overlap) with the
+        # current window (positive context) that is at least m more than with
+        # the negative context (entities outside the window)
 
         kl_pos = kl_divergence(target_dist, context_pos_dist)
         kl_neg = kl_divergence(target_dist, context_neg_dist)

@@ -293,7 +293,8 @@ def main(args):
                                                 args['window'],
                                                 args['batch_size'],
                                                 args['covariance'],
-                                                device))
+                                                device,
+                                                args['verbose']))
     model.to(device)
     print('Model summary:')
     print(model)
