@@ -127,7 +127,7 @@ def train(model, dataset, args, device):
             elapsed = time() - start_time
             throuput = args['batch_size'] / elapsed
             prog = args['batch_size'] * (i + 1) / len(dataset) * 100
-            print('\r  progress: {:.2f}% entities/s: {:.2f}'.format(
+            print('\r  progress: {:.5f}% entities/s: {:.2f}'.format(
                       min(prog, 100.), throuput
                   ), end='')
             sys.stdout.flush()
