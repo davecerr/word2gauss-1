@@ -111,6 +111,7 @@ def train(model, dataset, args, device):
     model.train()
     optimizer = optim.Adam(model.parameters())
     start_time = time()
+    torch.set_num_threads(2)
     print(f"Number of threads = {torch.get_num_threads()}")
     loss_list = []
 
